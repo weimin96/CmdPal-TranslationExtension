@@ -13,7 +13,7 @@ public partial class TranslationExtensionCommandsProvider : CommandProvider
 
     public TranslationExtensionCommandsProvider()
     {
-        DisplayName = "翻译插件";
+        DisplayName = "快速翻译1";
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
         _commands = [
             new CommandItem(new TranslationExtensionPage()) { Title = DisplayName },

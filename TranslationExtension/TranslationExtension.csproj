@@ -48,6 +48,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Images\" />
+  </ItemGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
@@ -69,6 +72,7 @@
 
     <!-- When publishing trimmed, make sure to treat trimming warnings as build errors -->
     <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
+    <DefaultLanguage>zh-cn</DefaultLanguage>
 
   </PropertyGroup>
 
