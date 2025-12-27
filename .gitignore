@@ -1,0 +1,108 @@
+####################################
+# Visual Studio / .NET
+####################################
+
+## 编译输出
+bin/
+obj/
+out/
+
+## 用户/机器相关文件
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.userprefs
+
+## Visual Studio 缓存
+.vs/
+.vscode/
+
+## 测试结果
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+####################################
+# NuGet
+####################################
+
+## 包文件（推荐忽略）
+*.nupkg
+#packages/        # 如使用 packages.config 可取消注释
+
+## NuGet 本地缓存
+.nuget/
+.nuget/packages/
+
+####################################
+# .NET Core / ASP.NET Core
+####################################
+
+## 发布目录
+publish/
+wwwroot/lib/
+
+## 本地配置（包含密钥）
+appsettings.Development.json
+appsettings.Local.json
+
+####################################
+# 日志 & 临时文件
+####################################
+
+*.log
+*.tmp
+*.temp
+*.bak
+*.cache
+
+####################################
+# 操作系统文件
+####################################
+
+## Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+## macOS
+.DS_Store
+
+## Linux
+*~
+
+####################################
+# 工具 & 插件
+####################################
+
+## ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+## Rider
+.idea/
+
+## VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+####################################
+# 数据库 / 本地文件
+####################################
+
+*.mdf
+*.ldf
+*.db
+*.sqlite
+
+####################################
+# Azure / IIS
+####################################
+
+.azure/
+iisexpress/
