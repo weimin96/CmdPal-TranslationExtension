@@ -12,6 +12,8 @@ public class TranslationSettings
 {
     public const string DefaultSystemPrompt = "你是一个专业的翻译助手。";
     public const string DefaultPrompt = "翻译以下文字：";
+    public const string DefaultZhEnPrompt = "请将以下中文翻译成英文：";
+    public const string DefaultEnZhPrompt = "请将以下英文翻译成中文：";
     public const string DefaultMultiplePrompt = "翻译以下多段文字：";
 
     public TranslationProvider Provider { get; set; } = TranslationProvider.GLM;

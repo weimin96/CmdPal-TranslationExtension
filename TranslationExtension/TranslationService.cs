@@ -10,7 +10,7 @@ public class TranslationService
 {
     private static readonly HttpClient _httpClient = new HttpClient();
 
-    public static async Task<string> TranslateAsync(string text)
+    public static async Task<string> TranslateAsync(string text, string? promptOverride = null)
     {
         if (string.IsNullOrWhiteSpace(text)) return string.Empty;
 
@@ -19,7 +19,7 @@ public class TranslationService
         {
             if (settings.Provider == TranslationProvider.GLM)
             {
-                return await TranslateWithGlm(text, settings);
+                return await TranslateWithGlm(text, settings, promptOverride);
             }
             else
             {
@@ -32,18 +32,19 @@ public class TranslationService
         }
     }
 
-    private static async Task<string> TranslateWithGlm(string text, TranslationSettings settings)
+    private static async Task<string> TranslateWithGlm(string text, TranslationSettings settings, string? promptOverride)
     {
         if (string.IsNullOrEmpty(settings.GlmApiKey)) return "请先在设置中配置 GLM API Key";
 
         var url = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
+        var prompt = promptOverride ?? settings.GlmPrompt;
         var requestBody = new
         {
             model = settings.GlmModel,
             messages = new[]
             {
                 new { role = "system", content = settings.GlmSystemPrompt },
-                new { role = "user", content = $"{settings.GlmPrompt}\n{text}" }
+                new { role = "user", content = $"{prompt}\n{text}" }
             },
             temperature = settings.GlmTemperature,
             top_p = settings.GlmTopP,
