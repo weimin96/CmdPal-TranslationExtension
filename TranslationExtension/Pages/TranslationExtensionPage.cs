@@ -3,121 +3,157 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using TranslationExtension;
 
 namespace TranslationExtension;
 
-internal sealed partial class TranslationExtensionPage : DynamicListPage
+internal sealed partial class TranslationExtensionPage : DynamicListPage, IDisposable
 {
+    private List<ListItem> _allItems = new();
     private string _currentSearch = string.Empty;
-    private string _selectedPair = string.Empty;
-    private string _translationResult = string.Empty;
-    private bool _isLoading = false;
     private System.Threading.CancellationTokenSource? _cts;
+    private Task<string>? _translationTask;
 
     public TranslationExtensionPage()
     {
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
-        Name = "快速翻译";
-        this.ShowDetails = true; // 开启详情面板以展示长翻译结果
+        Title = "TranslateCmdPal";
+        Name = "Open";
+        this.ShowDetails = true;
+        
+        // Initialize with default items (Settings)
+        UpdateListWithSettings();
     }
 
-    public override void UpdateSearchText(string oldSearch, string newSearch)
+    public void Dispose()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
+    public override async void UpdateSearchText(string oldSearch, string newSearch)
     {
         var trimmed = newSearch.Trim();
-        if (_currentSearch != trimmed)
+        if (string.IsNullOrWhiteSpace(trimmed))
         {
-            _currentSearch = trimmed;
-            _selectedPair = string.Empty;
-            _translationResult = string.Empty;
-            _isLoading = false;
+            _currentSearch = string.Empty;
             _cts?.Cancel();
-            RaiseItemsChanged();
-        }
-    }
-
-    public override IListItem[] GetItems()
-    {
-        if (string.IsNullOrWhiteSpace(_currentSearch))
-        {
-            return [
-                new ListItem(new SettingsPage())
-                {
-                    Title = "翻译服务配置",
-                    Subtitle = "点击进入设置页面配置 API 密钥",
-                    Icon = new IconInfo("\uE713")
-                }
-            ];
+            UpdateListWithSettings();
+            RaiseItemsChanged(_allItems.Count);
+            return;
         }
 
-        // 如果已经选择了方向并正在加载或已完成
-        if (!string.IsNullOrEmpty(_selectedPair))
+        if (_currentSearch == trimmed)
         {
-            var statusItem = new ListItem(new NoOpCommand())
-            {
-                Title = _isLoading ? "正在努力翻译中..." : "翻译完成",
-                Subtitle = _isLoading ? $"源文本: {_currentSearch}" : $"已从 {_selectedPair} 获取结果",
-                Icon = new IconInfo(_isLoading ? "\uE895" : "\uE930"),
-                Details = new Details()
-                {
-                    Title = $"{_selectedPair} - 翻译结果",
-                    Body = _isLoading ? "请稍候..." : _translationResult
-                }
-            };
-            return [statusItem];
+            return;
         }
 
-        // 默认显示两个翻译方向供用户选择
-        return [
-            CreateDirectionItem("🇨🇳 中文 -> 🇺🇸 英文", TranslationSettings.DefaultZhEnPrompt),
-            CreateDirectionItem("🇺🇸 英文 -> 🇨🇳 中文", TranslationSettings.DefaultEnZhPrompt)
-        ];
-    }
-
-    private ListItem CreateDirectionItem(string direction, string prompt)
-    {
-        return new ListItem(new AnonymousCommand(() => StartTranslation(direction, prompt)))
-        {
-            Title = direction,
-            Subtitle = $"将 \"{_currentSearch}\" {direction.Split(' ')[0]}",
-            Icon = new IconInfo("\uF2B7")
-        };
-    }
-
-    private void StartTranslation(string direction, string prompt)
-    {
-        _selectedPair = direction;
-        _isLoading = true;
-        _translationResult = string.Empty;
-        RaiseItemsChanged();
-
+        _currentSearch = trimmed;
+        
+        // Cancel previous task
         _cts?.Cancel();
         _cts = new System.Threading.CancellationTokenSource();
         var token = _cts.Token;
 
-        System.Threading.Tasks.Task.Run(async () =>
+        // Determine direction based on content (Simple heuristic: contains Chinese -> to English, else -> to Chinese)
+        bool isChinese = ContainsChinese(trimmed);
+        string prompt = isChinese ? TranslationSettings.DefaultZhEnPrompt : TranslationSettings.DefaultEnZhPrompt;
+        string directionLabel = isChinese ? "中文 -> 英文" : "英文 -> 中文";
+
+        // Show loading state
+        _allItems.Clear();
+        _allItems.Add(new ListItem(new NoOpCommand())
         {
-            try
+            Title = "正在翻译...",
+            Subtitle = $"{directionLabel}: {trimmed}",
+            Icon = new IconInfo("\uE895"), // Clock/Loading icon
+            Details = new Details { Title = "翻译中", Body = "请稍候..." }
+        });
+        RaiseItemsChanged(_allItems.Count);
+
+        try
+        {
+            // Debounce slightly
+            await Task.Delay(300, token);
+
+            // Double check cancellation before precise work
+            if (token.IsCancellationRequested) return;
+
+            var result = await TranslationService.TranslateAsync(trimmed, prompt);
+            
+            if (!token.IsCancellationRequested && !string.IsNullOrEmpty(result))
             {
-                var result = await TranslationService.TranslateAsync(_currentSearch, prompt);
-                if (!token.IsCancellationRequested)
+                // Update UI on completion
+                _allItems.Clear();
+                _allItems.Add(new ListItem(new AnonymousCommand(() => 
                 {
-                    _isLoading = false;
-                    _translationResult = result;
-                    RaiseItemsChanged();
-                }
+                   var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
+                   dataPackage.SetText(result);
+                   Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+                }))
+                {
+                    Title = result,
+                    Subtitle = $"{directionLabel}: {trimmed}",
+                    Icon = new IconInfo("\uE930"), // Checkmark/Completed
+                    Details = new Details 
+                    { 
+                        Title = "翻译结果", 
+                        Body = result 
+                    }
+                });
+                RaiseItemsChanged(_allItems.Count);
             }
-            catch (Exception ex)
+        }
+        catch (OperationCanceledException)
+        {
+            // Ignore cancellation
+        }
+        catch (Exception ex)
+        {
+            if (!token.IsCancellationRequested)
             {
-                if (!token.IsCancellationRequested)
+                 _allItems.Clear();
+                _allItems.Add(new ListItem(new NoOpCommand())
                 {
-                    _isLoading = false;
-                    _translationResult = $"翻译出错: {ex.Message}";
-                    RaiseItemsChanged();
-                }
+                    Title = "Error",
+                    Subtitle = ex.Message,
+                    Icon = new IconInfo("\uE711")
+                });
+                RaiseItemsChanged(_allItems.Count);
             }
-        }, token);
+        }
+    }
+    
+    // --- Helper Methods ---
+
+    private void UpdateListWithSettings()
+    {
+        _allItems.Clear();
+        _allItems.Add(new ListItem(new SettingsPage())
+        {
+            Title = "翻译服务配置",
+            Subtitle = "点击进入设置页面配置 API 密钥",
+            Icon = new IconInfo("\uE713")
+        });
+    }
+
+    private static bool ContainsChinese(string text)
+    {
+        // Simple range check for CJK Unified Ideographs
+        foreach (char c in text)
+        {
+            if (c >= 0x4E00 && c <= 0x9FFF) return true;
+        }
+        return false;
+    }
+
+    public override IListItem[] GetItems()
+    {
+        return _allItems.ToArray();
     }
 }
