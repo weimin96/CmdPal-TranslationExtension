@@ -40,8 +40,14 @@ internal sealed partial class SettingsPage : ContentPage
         _settingsForm.Add(new TextSetting("BaiduSecretKey", _appSettings.BaiduSecretKey)
         {
             Label = "Baidu Secret Key",
-            Description = "输入百度翻译 API 密钥" // Note: Toolkit might not support IsPassword for TextSetting easily? Assuming standard text for now.
+            Description = "输入百度翻译 API 密钥"
         });
+        // 百度翻译 API 快速跳转链接
+        //_settingsForm.Add(new LinkSetting("BaiduApiLink", "https://fanyi-api.baidu.com/")
+        //{
+        //    Label = "百度翻译开发者平台",
+        //    Description = "点击获取 App ID 和密钥"
+        //});
 
         // Google Settings
         _settingsForm.Add(new TextSetting("GoogleApiKey", _appSettings.GoogleApiKey)

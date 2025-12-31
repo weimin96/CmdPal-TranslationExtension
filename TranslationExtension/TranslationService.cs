@@ -37,25 +37,40 @@ public class TranslationService
         if (string.IsNullOrEmpty(settings.BaiduAppId) || string.IsNullOrEmpty(settings.BaiduSecretKey))
             return "请先在设置中配置 Baidu API Credentials";
 
+        // 原文
         string q = text;
+        // 源语言，百度支持自动识别
         string from = "auto";
-        string to = "zh"; // Default to zh
+        // 目标语言，默认中文
+        string to = "zh";
         
-        // Simple direction check logic can be passed in or inferred, 
-        // but Baidu auto-detects 'from'. 
-        // We need 'to' language. logic in Page handles display direction, 
-        // but ideally we pass target lang. 
-        // For now, let's infer 'to' based on if text contains Chinese.
+        // 自动判定翻译方向：如果包含中文则翻译成英文，否则翻译成中文
         bool isChinese = false;
         foreach (char c in text) { if (c >= 0x4E00 && c <= 0x9FFF) { isChinese = true; break; } }
         to = isChinese ? "en" : "zh";
 
+        // 改成您的APP ID
         string appId = settings.BaiduAppId;
+        // 改成您的密钥
         string secretKey = settings.BaiduSecretKey;
-        string salt = new Random().Next(10000, 99999).ToString();
+        
+        // 随机数
+        Random rd = new Random();
+        string salt = rd.Next(10000, 99999).ToString();
+        
+        // 计算签名：sign = md5(appid + q + salt + secretKey)
         string sign = MD5Encrypt(appId + q + salt + secretKey);
         
-        string url = $"http://api.fanyi.baidu.com/api/trans/vip/translate?q={Uri.EscapeDataString(q)}&from={from}&to={to}&appid={appId}&salt={salt}&sign={sign}";
+        // 百度翻译 API 地址
+        // 使用 HTTPS 协议：https://api.fanyi.baidu.com/api/trans/vip/translate
+        // q 参数需要进行 UrlEncode
+        string url = "https://api.fanyi.baidu.com/api/trans/vip/translate?";
+        url += "q=" + System.Net.WebUtility.UrlEncode(q);
+        url += "&from=" + from;
+        url += "&to=" + to;
+        url += "&appid=" + appId;
+        url += "&salt=" + salt;
+        url += "&sign=" + sign;
 
         var response = await _httpClient.GetAsync(url);
         response.EnsureSuccessStatusCode();
@@ -64,25 +79,27 @@ public class TranslationService
         using var doc = JsonDocument.Parse(resultJson);
         var root = doc.RootElement;
 
+        // 检查错误码
         if (root.TryGetProperty("error_code", out var errorCode))
         {
            string code = errorCode.ToString();
-           if(code != "52000" && code != "0") // 52000 is success generally, but usually error_code only appears on error? Verify API.
+           if(code != "52000" && code != "0") 
            {
-               // If error_code exists and is not success code
+                // 如果存在错误码且不是成功状态
                 if (root.TryGetProperty("error_msg", out var errorMsg))
                     return $"Baidu Error: {errorMsg.GetString()} ({code})";
                 return $"Baidu Error Code: {code}";
            }
         }
 
+        // 解析翻译结果
         if (root.TryGetProperty("trans_result", out var transResult))
         {
              var sb = new StringBuilder();
              foreach (var item in transResult.EnumerateArray())
              {
-                 if (sb.Length > 0) sb.AppendLine();
-                 sb.Append(item.GetProperty("dst").GetString());
+                  if (sb.Length > 0) sb.AppendLine();
+                  sb.Append(item.GetProperty("dst").GetString());
              }
              return sb.ToString();
         }
@@ -90,15 +107,20 @@ public class TranslationService
         return "未获取到翻译结果";
     }
 
-    private static string MD5Encrypt(string input)
+    // 计算MD5值
+    private static string MD5Encrypt(string str)
     {
         using var md5 = System.Security.Cryptography.MD5.Create();
-        var inputBytes = System.Text.Encoding.UTF8.GetBytes(input);
-        var hashBytes = md5.ComputeHash(inputBytes);
+        // 将字符串转换成字节数组
+        var byteOld = System.Text.Encoding.UTF8.GetBytes(str);
+        // 调用加密方法
+        var byteNew = md5.ComputeHash(byteOld);
+        // 将加密结果转换为字符串
         var sb = new StringBuilder();
-        foreach (var t in hashBytes)
+        foreach (var b in byteNew)
         {
-            sb.Append(t.ToString("x2"));
+            // 将字节转换成16进制表示的字符串
+            sb.Append(b.ToString("x2"));
         }
         return sb.ToString();
     }    
