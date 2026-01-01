@@ -3,15 +3,15 @@
   <p>专为 PowerToys 深度定制的极速翻译扩展</p>
 
   <p>
-    <img src="https://github.com/weimin96/TranslationExtension/actions/workflows/build.yml/badge.svg" alt="Build Status" />
-    <img src="https://img.shields.io/github/license/weimin96/TranslationExtension" alt="License" />
+    <img src="https://github.com/weimin96/CmdPal-TranslationExtension/actions/workflows/build.yml/badge.svg" alt="Build Status" />
+    <img src="https://img.shields.io/github/license/weimin96/CmdPal-TranslationExtension" alt="License" />
     <img src="https://img.shields.io/badge/.NET-9.0-blue?style=flat-square&logo=dotnet" alt="Dotnet Version" />
     <img src="https://img.shields.io/badge/Platform-Windows-0078D4?style=flat-square&logo=windows" alt="Platform" />
   </p>
   <p>
-    <img src="https://img.shields.io/github/stars/weimin96/TranslationExtension?style=flat-square" alt="Stars" />
-    <img src="https://img.shields.io/github/issues/weimin96/TranslationExtension?style=flat-square" alt="Issues" />
-    <img src="https://img.shields.io/github/forks/weimin96/TranslationExtension?style=flat-square" alt="Forks" />
+    <img src="https://img.shields.io/github/stars/weimin96/CmdPal-TranslationExtension?style=flat-square" alt="Stars" />
+    <img src="https://img.shields.io/github/issues/weimin96/CmdPal-TranslationExtension?style=flat-square" alt="Issues" />
+    <img src="https://img.shields.io/github/forks/weimin96/CmdPal-TranslationExtension?style=flat-square" alt="Forks" />
   </p>
 </div>
 
@@ -51,8 +51,8 @@
 
 ### 克隆代码仓库
 ```powershell
-git clone https://github.com/weimin96/TranslationExtension.git
-cd TranslationExtension
+git clone https://github.com/weimin96/CmdPal-TranslationExtension.git
+cd CmdPal-TranslationExtension
 ```
 
 ### 生成自签名证书 (仅当需要重新生成时)
