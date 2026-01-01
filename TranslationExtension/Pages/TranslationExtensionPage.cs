@@ -21,7 +21,7 @@ internal sealed partial class TranslationExtensionPage : DynamicListPage, IDispo
     public TranslationExtensionPage()
     {
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
-        Title = "TranslateCmdPal";
+        Title = "快速翻译";
         Name = "Open";
         this.ShowDetails = true;
         
@@ -79,7 +79,7 @@ internal sealed partial class TranslationExtensionPage : DynamicListPage, IDispo
         try
         {
             // Debounce slightly
-            await Task.Delay(300, token);
+            await Task.Delay(500, token);
 
             // Double check cancellation before precise work
             if (token.IsCancellationRequested) return;

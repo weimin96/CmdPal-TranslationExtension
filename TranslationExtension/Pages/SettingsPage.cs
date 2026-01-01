@@ -22,7 +22,7 @@ internal sealed partial class SettingsPage : ContentPage
         var providers = new List<ChoiceSetSetting.Choice>
         {
             new("Baidu Translate", "Baidu"),
-            new("Google Translate", "Google")
+            //new("Google Translate", "Google")
         };
         _settingsForm.Add(new ChoiceSetSetting("Provider", providers)
         {
@@ -42,19 +42,13 @@ internal sealed partial class SettingsPage : ContentPage
             Label = "Baidu Secret Key",
             Description = "输入百度翻译 API 密钥"
         });
-        // 百度翻译 API 快速跳转链接
-        //_settingsForm.Add(new LinkSetting("BaiduApiLink", "https://fanyi-api.baidu.com/")
-        //{
-        //    Label = "百度翻译开发者平台",
-        //    Description = "点击获取 App ID 和密钥"
-        //});
 
         // Google Settings
-        _settingsForm.Add(new TextSetting("GoogleApiKey", _appSettings.GoogleApiKey)
-        {
-            Label = "Google API Key",
-            Description = "输入 Google Translate API Key"
-        });
+        //_settingsForm.Add(new TextSetting("GoogleApiKey", _appSettings.GoogleApiKey)
+        //{
+        //    Label = "Google API Key",
+        //    Description = "输入 Google Translate API Key"
+        //});
 
         _settingsForm.SettingsChanged += SettingsChanged;
     }
@@ -74,7 +68,7 @@ internal sealed partial class SettingsPage : ContentPage
 
         _appSettings.BaiduAppId = args.GetSetting<string>("BaiduAppId") ?? string.Empty;
         _appSettings.BaiduSecretKey = args.GetSetting<string>("BaiduSecretKey") ?? string.Empty;
-        _appSettings.GoogleApiKey = args.GetSetting<string>("GoogleApiKey") ?? string.Empty;
+        //_appSettings.GoogleApiKey = args.GetSetting<string>("GoogleApiKey") ?? string.Empty;
 
         SettingsManager.Save(_appSettings);
         
