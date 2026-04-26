@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./docs/readme-banner.svg" alt="TranslationExtension 项目横幅" />
+</p>
+
 <div align="center">
   <h1>TranslationExtension</h1>
   <p>专为 PowerToys 深度定制的极速翻译扩展</p>
@@ -29,7 +33,7 @@
 ## 核心特性
 
 - **极速响应**：基于 .NET 9 高性能运行时，翻译请求毫秒级响应。
-- **PowerToys 集成**：深度适配 PowerToys 插件体系，集成度高。
+- **PowerToys 集成**：深度适配 PowerToys 插件体系。
 - **智能感应**：支持中英文自动检测与互译，无需手动切换源语言。
 - **灵活配置**：内置统一的设置面板，支持多种 API 凭证管理（目前已完善支持百度翻译、DeepSeek、智谱AI、MiniMax）。
 - **现代 UI**：采用 WinUI 3 框架，完美融入 Windows 11 设计风格，支持深色/浅色模式。
@@ -109,7 +113,7 @@ Get-AppxPackage TranslationExtension | Remove-AppxPackage
 4. 选择 **Baidu** 提供商，填入对应的凭证并保存。
 
 > [!TIP]
-> 百度翻译为新用户提供一定额度的每月免费调用字数，适合个人开发者使用。
+> 百度翻译为新用户提供一定额度的每月免费调用字数，适合个人使用。
 
 ### DeepSeek
 1. 注册并登录 [DeepSeek 开放平台](https://platform.deepseek.com/)。

@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-labelledby="bannerTitle bannerDesc">
+  <title id="bannerTitle">TranslationExtension README 顶部横幅</title>
+  <desc id="bannerDesc">面向 PowerToys Command Palette 的 Windows 快速翻译扩展项目介绍图</desc>
+  <defs>
+    <linearGradient id="backgroundGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fbff" />
+      <stop offset="0.56" stop-color="#edf7f5" />
+      <stop offset="1" stop-color="#fff7e8" />
+    </linearGradient>
+    <linearGradient id="panelGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" />
+      <stop offset="1" stop-color="#f4f8fb" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0f766e" />
+      <stop offset="0.52" stop-color="#2563eb" />
+      <stop offset="1" stop-color="#f59e0b" />
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#123044" flood-opacity="0.14" />
+    </filter>
+  </defs>
+
+  <rect width="1280" height="420" rx="28" fill="url(#backgroundGradient)" />
+  <rect x="28" y="28" width="1224" height="364" rx="24" fill="none" stroke="#dbe8ef" stroke-width="2" />
+  <path d="M72 334 C190 278, 286 360, 422 292 C552 226, 664 272, 782 208 C910 138, 1052 176, 1208 108" fill="none" stroke="#d7e8e7" stroke-width="18" stroke-linecap="round" opacity="0.68" />
+  <path d="M90 356 C214 306, 316 372, 442 314 C574 254, 694 296, 820 230 C944 166, 1076 206, 1190 142" fill="none" stroke="#fde8b5" stroke-width="12" stroke-linecap="round" opacity="0.72" />
+
+  <g transform="translate(84 76)">
+    <rect x="0" y="0" width="92" height="92" rx="22" fill="#102a43" />
+    <path d="M27 26 H65 V36 H43 L67 60 L60 67 L36 43 V65 H26 V27 C26 26.45 26.45 26 27 26Z" fill="#5eead4" />
+    <path d="M31 69 H70" stroke="#fbbf24" stroke-width="6" stroke-linecap="round" />
+  </g>
+
+  <g font-family="'Segoe UI', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif">
+    <text x="84" y="208" fill="#102a43" font-size="54" font-weight="800">TranslationExtension</text>
+    <text x="87" y="254" fill="#345160" font-size="26" font-weight="600">PowerToys Command Palette 快速翻译扩展</text>
+    <text x="87" y="302" fill="#486474" font-size="20">中英自动识别 · 多服务商接入 · Windows 原生体验</text>
+
+    <g transform="translate(86 332)">
+      <rect x="0" y="0" width="120" height="34" rx="17" fill="#e6f6f3" />
+      <text x="60" y="23" text-anchor="middle" fill="#0f766e" font-size="15" font-weight="700">.NET 9</text>
+      <rect x="136" y="0" width="126" height="34" rx="17" fill="#e8f0ff" />
+      <text x="199" y="23" text-anchor="middle" fill="#2563eb" font-size="15" font-weight="700">WinUI 3</text>
+      <rect x="278" y="0" width="152" height="34" rx="17" fill="#fff1d6" />
+      <text x="354" y="23" text-anchor="middle" fill="#b45309" font-size="15" font-weight="700">Command Palette</text>
+    </g>
+  </g>
+
+  <g transform="translate(708 70)" filter="url(#softShadow)" font-family="'Segoe UI', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif">
+    <rect x="0" y="0" width="488" height="284" rx="26" fill="url(#panelGradient)" stroke="#d8e5ec" />
+    <rect x="0" y="0" width="488" height="54" rx="26" fill="#102a43" />
+    <path d="M0 31 H488 V54 H0 Z" fill="#102a43" />
+    <circle cx="32" cy="27" r="7" fill="#ef4444" />
+    <circle cx="58" cy="27" r="7" fill="#f59e0b" />
+    <circle cx="84" cy="27" r="7" fill="#22c55e" />
+    <text x="124" y="35" fill="#d9eef7" font-size="17" font-weight="600">Command Palette</text>
+
+    <rect x="34" y="82" width="420" height="48" rx="14" fill="#ffffff" stroke="#d4e3eb" />
+    <text x="58" y="113" fill="#1e3a4a" font-size="19" font-weight="600">翻译 你好，世界</text>
+    <path d="M410 96 L426 106 L410 116" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+    <rect x="34" y="154" width="196" height="82" rx="18" fill="#eefcf8" stroke="#c8eee5" />
+    <text x="56" y="187" fill="#0f766e" font-size="18" font-weight="700">自动识别</text>
+    <text x="56" y="216" fill="#486474" font-size="16">中文 → English</text>
+
+    <rect x="258" y="154" width="196" height="82" rx="18" fill="#f3f6ff" stroke="#d9e2ff" />
+    <text x="280" y="187" fill="#2563eb" font-size="18" font-weight="700">翻译结果</text>
+    <text x="280" y="216" fill="#486474" font-size="16">Hello, world</text>
+
+    <g transform="translate(34 254)">
+      <rect x="0" y="0" width="78" height="22" rx="11" fill="#f4f8fb" />
+      <text x="39" y="16" text-anchor="middle" fill="#587080" font-size="12">Baidu</text>
+      <rect x="88" y="0" width="88" height="22" rx="11" fill="#f4f8fb" />
+      <text x="132" y="16" text-anchor="middle" fill="#587080" font-size="12">DeepSeek</text>
+      <rect x="186" y="0" width="78" height="22" rx="11" fill="#f4f8fb" />
+      <text x="225" y="16" text-anchor="middle" fill="#587080" font-size="12">智谱 AI</text>
+      <rect x="274" y="0" width="84" height="22" rx="11" fill="#f4f8fb" />
+      <text x="316" y="16" text-anchor="middle" fill="#587080" font-size="12">MiniMax</text>
+    </g>
+  </g>
+
+  <rect x="84" y="384" width="1112" height="6" rx="3" fill="url(#accentGradient)" opacity="0.9" />
+</svg>
