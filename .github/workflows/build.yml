@@ -47,10 +47,12 @@ jobs:
             /p:UapAppxPackageBuildMode=SideloadOnly `
             /p:AppxPackageDir=AppPackages\${{ matrix.platform }}\
 
-          Write-Host "检查 MSIX 输出"
-          Get-ChildItem AppPackages -Recurse
+          $packageDirectory = "TranslationExtension\AppPackages\${{ matrix.platform }}"
 
-          if (!(Get-ChildItem AppPackages -Recurse -Filter *.msix)) {
+          Write-Host "检查 MSIX 输出"
+          Get-ChildItem -LiteralPath $packageDirectory -Recurse
+
+          if (!(Get-ChildItem -LiteralPath $packageDirectory -Recurse -Filter *.msix -File)) {
             throw "未找到 MSIX 包。"
           }
 
@@ -58,4 +60,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: TranslationExtension-${{ matrix.platform }}
-          path: AppPackages/${{ matrix.platform }}/
+          path: TranslationExtension/AppPackages/${{ matrix.platform }}/
