@@ -1,0 +1,128 @@
+name: 发布 Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: 构建 MSIX (${{ matrix.platform }})
+    if: github.event.created == true && github.event.deleted == false
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        configuration: [Release]
+        platform: [x64, arm64]
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 安装 .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: 添加 msbuild 到 PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: 还原依赖
+        run: dotnet restore TranslationExtension.sln
+
+      - name: 构建 MSIX
+        shell: pwsh
+        run: |
+          msbuild TranslationExtension/TranslationExtension.csproj `
+            /p:Configuration=${{ matrix.configuration }} `
+            /p:Platform=${{ matrix.platform }} `
+            /p:GenerateAppxPackageOnBuild=true `
+            /p:AppxBundle=Never `
+            /p:UapAppxPackageBuildMode=SideloadOnly `
+            /p:AppxPackageDir=AppPackages\${{ matrix.platform }}\
+
+          Write-Host "检查 MSIX 输出"
+          Get-ChildItem AppPackages -Recurse
+
+          if (!(Get-ChildItem AppPackages -Recurse -Filter *.msix)) {
+            throw "未找到 MSIX 包。"
+          }
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: TranslationExtension-${{ matrix.platform }}
+          path: AppPackages/${{ matrix.platform }}/
+
+  release:
+    name: 发布 GitHub Release
+    needs: build
+    if: github.event.created == true && github.event.deleted == false
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: 准备 Release 附件
+        shell: pwsh
+        run: |
+          $assetDirectory = Join-Path $PWD "release-assets"
+          New-Item -ItemType Directory -Path $assetDirectory -Force | Out-Null
+
+          $packages = Get-ChildItem -Path "artifacts" -Recurse -Filter "*.msix" -File
+          if (-not $packages) {
+            throw "未找到 MSIX 发布包，停止创建 Release。"
+          }
+
+          foreach ($package in $packages) {
+            Copy-Item -LiteralPath $package.FullName -Destination $assetDirectory -Force
+          }
+
+          Get-ChildItem -LiteralPath $assetDirectory -File | ForEach-Object {
+            Write-Host $_.FullName
+          }
+
+      - name: 检查 Release 状态
+        id: release_state
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_TAG: ${{ github.ref_name }}
+        run: |
+          $releaseUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/releases/tags/$env:TARGET_TAG"
+          $headers = @{
+            Authorization = "Bearer $env:GITHUB_TOKEN"
+            Accept = "application/vnd.github+json"
+            "X-GitHub-Api-Version" = "2022-11-28"
+          }
+
+          $response = Invoke-WebRequest -Uri $releaseUri -Headers $headers -SkipHttpErrorCheck
+          if ($response.StatusCode -eq 200) {
+            Write-Host "Release $env:TARGET_TAG 已存在，跳过创建。"
+            "release_exists=true" >> $env:GITHUB_OUTPUT
+            exit 0
+          }
+
+          if ($response.StatusCode -ne 404) {
+            throw "检查 Release 状态失败，HTTP 状态码：$($response.StatusCode)。"
+          }
+
+          "release_exists=false" >> $env:GITHUB_OUTPUT
+
+      - name: 创建 Release
+        if: steps.release_state.outputs.release_exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/*.msix
+          generate_release_notes: true

@@ -1,15 +1,17 @@
-name: Build and Package
+name: 构建与打包
 
 on:
   push:
     branches: [ "main" ]
-    tags:
-      - 'v*'
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
+    name: 构建 MSIX (${{ matrix.platform }})
     runs-on: windows-latest
 
     strategy:
@@ -18,23 +20,23 @@ jobs:
         platform: [x64, arm64]
 
     steps:
-      - name: Checkout
+      - name: 检出代码
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Install .NET
+      - name: 安装 .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
 
-      - name: Add msbuild to PATH
+      - name: 添加 msbuild 到 PATH
         uses: microsoft/setup-msbuild@v2
 
-      - name: Restore
+      - name: 还原依赖
         run: dotnet restore TranslationExtension.sln
 
-      - name: Build MSIX
+      - name: 构建 MSIX
         shell: pwsh
         run: |
           msbuild TranslationExtension/TranslationExtension.csproj `
@@ -45,40 +47,15 @@ jobs:
             /p:UapAppxPackageBuildMode=SideloadOnly `
             /p:AppxPackageDir=AppPackages\${{ matrix.platform }}\
 
-          Write-Host "Verify MSIX output"
+          Write-Host "检查 MSIX 输出"
           Get-ChildItem AppPackages -Recurse
 
           if (!(Get-ChildItem AppPackages -Recurse -Filter *.msix)) {
-            Write-Error "MSIX package not found!"
+            throw "未找到 MSIX 包。"
           }
 
-      - name: Upload Artifacts
+      - name: 上传构建产物
         uses: actions/upload-artifact@v4
         with:
           name: TranslationExtension-${{ matrix.platform }}
           path: AppPackages/${{ matrix.platform }}/
-
-  release:
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Prepare release assets
-        run: |
-          mkdir release-assets
-          find artifacts -name "*.msix" -exec cp {} release-assets/ \;
-          ls -R release-assets
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: release-assets/*.msix
-          generate_release_notes: true
