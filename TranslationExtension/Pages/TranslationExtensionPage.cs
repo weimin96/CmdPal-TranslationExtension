@@ -69,9 +69,13 @@ internal sealed partial class TranslationExtensionPage : DynamicListPage, IDispo
         _allItems.Add(new ListItem(new NoOpCommand())
         {
             Title = "正在翻译...",
-            Subtitle = $"{directionLabel}: {trimmed}",
+            Subtitle = $"{directionLabel} · 正在处理输入",
             Icon = new IconInfo("\uE895"), // Clock/Loading icon
-            Details = new Details { Title = "翻译中", Body = "请稍候..." }
+            Details = new Details
+            {
+                Title = "翻译中",
+                Body = $"方向：{directionLabel}\n\n原文：\n{trimmed}\n\n请稍候..."
+            }
         });
         RaiseItemsChanged(_allItems.Count);
 
@@ -118,12 +122,12 @@ internal sealed partial class TranslationExtensionPage : DynamicListPage, IDispo
         var item = new ListItem(new CopyTextCommand(result))
         {
             Title = result,
-            Subtitle = $"{directionLabel}: {original}  (双击复制)",
+            Subtitle = $"{directionLabel} · 双击复制译文",
             Icon = new IconInfo("\uE8C8"), // Copy icon
             Details = new Details
             {
                 Title = "翻译结果",
-                Body = result
+                Body = $"译文：\n{result}\n\n原文：\n{original}\n\n操作：双击当前结果可复制译文。"
             }
         };
 
