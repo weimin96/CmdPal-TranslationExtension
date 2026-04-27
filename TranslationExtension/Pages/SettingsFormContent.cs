@@ -284,23 +284,21 @@ internal sealed partial class SettingsFormContent : FormContent
             "type": "Action.ToggleVisibility",
             "title": "{{title}}",
             "targetElements": [
-                {
-                    "elementId": "baiduSettings",
-                    "isVisible": {{ToJsonBoolean(visibleElementId == "baiduSettings")}}
-                },
-                {
-                    "elementId": "deepSeekSettings",
-                    "isVisible": {{ToJsonBoolean(visibleElementId == "deepSeekSettings")}}
-                },
-                {
-                    "elementId": "glmSettings",
-                    "isVisible": {{ToJsonBoolean(visibleElementId == "glmSettings")}}
-                },
-                {
-                    "elementId": "minimaxSettings",
-                    "isVisible": {{ToJsonBoolean(visibleElementId == "minimaxSettings")}}
-                }
+                {{GetVisibilityTargetTemplate("baiduSettings", visibleElementId == "baiduSettings")}},
+                {{GetVisibilityTargetTemplate("deepSeekSettings", visibleElementId == "deepSeekSettings")}},
+                {{GetVisibilityTargetTemplate("glmSettings", visibleElementId == "glmSettings")}},
+                {{GetVisibilityTargetTemplate("minimaxSettings", visibleElementId == "minimaxSettings")}}
             ]
+        }
+        """;
+    }
+
+    private static string GetVisibilityTargetTemplate(string elementId, bool isVisible)
+    {
+        return $$"""
+        {
+            "elementId": "{{elementId}}",
+            "isVisible": {{ToJsonBoolean(isVisible)}}
         }
         """;
     }
@@ -325,6 +323,15 @@ internal sealed partial class SettingsFormContent : FormContent
                     "text": "百度翻译凭据",
                     "size": "Medium",
                     "weight": "Bolder",
+                    "wrap": true
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "当前服务商",
+                    "size": "Small",
+                    "color": "Accent",
+                    "isSubtle": true,
+                    "spacing": "None",
                     "wrap": true
                 },
                 {
@@ -378,6 +385,15 @@ internal sealed partial class SettingsFormContent : FormContent
                     "wrap": true
                 },
                 {
+                    "type": "TextBlock",
+                    "text": "当前服务商",
+                    "size": "Small",
+                    "color": "Accent",
+                    "isSubtle": true,
+                    "spacing": "None",
+                    "wrap": true
+                },
+                {
                     "type": "Input.Text",
                     "id": "DeepSeekApiKey",
                     "label": "API Key",
@@ -428,6 +444,15 @@ internal sealed partial class SettingsFormContent : FormContent
                     "wrap": true
                 },
                 {
+                    "type": "TextBlock",
+                    "text": "当前服务商",
+                    "size": "Small",
+                    "color": "Accent",
+                    "isSubtle": true,
+                    "spacing": "None",
+                    "wrap": true
+                },
+                {
                     "type": "Input.Text",
                     "id": "GlmApiKey",
                     "label": "API Key",
@@ -475,6 +500,15 @@ internal sealed partial class SettingsFormContent : FormContent
                     "text": "MiniMax 凭据",
                     "size": "Medium",
                     "weight": "Bolder",
+                    "wrap": true
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "当前服务商",
+                    "size": "Small",
+                    "color": "Accent",
+                    "isSubtle": true,
+                    "spacing": "None",
                     "wrap": true
                 },
                 {
