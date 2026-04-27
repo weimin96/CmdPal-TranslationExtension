@@ -27,13 +27,13 @@ public class TranslationSettings
 
     // DeepSeek Settings
     public string DeepSeekApiKey { get; set; } = string.Empty;
-    public string DeepSeekModel { get; set; } = "deepseek-chat";
+    public string DeepSeekModel { get; set; } = "deepseek-v4-flash";
 
     // GLM Settings
     public string GlmApiKey { get; set; } = string.Empty;
-    public string GlmModel { get; set; } = "glm-4.7";
+    public string GlmModel { get; set; } = "glm-5.1";
 
     // MiniMax Settings
     public string MinimaxApiKey { get; set; } = string.Empty;
-    public string MinimaxModel { get; set; } = "MiniMax-M2.1";
+    public string MinimaxModel { get; set; } = "MiniMax-M2.7-highspeed";
 }

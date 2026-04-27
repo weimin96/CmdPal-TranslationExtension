@@ -6,7 +6,7 @@ namespace TranslationExtension.Providers;
 public class DeepSeekRequest
 {
     [JsonPropertyName("model")]
-    public string Model { get; set; } = "deepseek-chat";
+    public string Model { get; set; } = "deepseek-v4-flash";
 
     [JsonPropertyName("messages")]
     public DeepSeekMessage[] Messages { get; set; } = Array.Empty<DeepSeekMessage>();

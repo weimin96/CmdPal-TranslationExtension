@@ -122,9 +122,48 @@ jobs:
 
           "release_exists=false" >> $env:GITHUB_OUTPUT
 
+      - name: 生成 Release 日志
+        if: steps.release_state.outputs.release_exists == 'false'
+        shell: pwsh
+        env:
+          TARGET_TAG: ${{ github.ref_name }}
+        run: |
+          $changeLogPath = "CHANGELOG.md"
+          if (!(Test-Path -LiteralPath $changeLogPath)) {
+            throw "未找到 CHANGELOG.md，无法生成 Release 日志。"
+          }
+
+          $targetVersion = $env:TARGET_TAG.TrimStart('v')
+          $lines = Get-Content -LiteralPath $changeLogPath -Encoding UTF8
+          $headerPattern = '^## \[(?<version>[^\]]+)\] - \d{4}-\d{2}-\d{2}$'
+
+          $startIndex = -1
+          for ($index = 0; $index -lt $lines.Count; $index++) {
+            $match = [System.Text.RegularExpressions.Regex]::Match($lines[$index], $headerPattern)
+            if ($match.Success -and $match.Groups['version'].Value -eq $targetVersion) {
+              $startIndex = $index
+              break
+            }
+          }
+
+          if ($startIndex -lt 0) {
+            throw "CHANGELOG.md 中未找到版本 $targetVersion 的日志段落。"
+          }
+
+          $endIndex = $lines.Count
+          for ($index = $startIndex + 1; $index -lt $lines.Count; $index++) {
+            if ($lines[$index] -match '^## ') {
+              $endIndex = $index
+              break
+            }
+          }
+
+          $releaseNotes = $lines[$startIndex..($endIndex - 1)]
+          Set-Content -LiteralPath "release-notes.md" -Value $releaseNotes -Encoding utf8
+
       - name: 创建 Release
         if: steps.release_state.outputs.release_exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           files: release-assets/*.msix
-          generate_release_notes: true
+          body_path: release-notes.md

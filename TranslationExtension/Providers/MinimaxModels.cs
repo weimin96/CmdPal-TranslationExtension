@@ -9,7 +9,7 @@ namespace TranslationExtension.Providers;
 public class MinimaxRequest
 {
     [JsonPropertyName("model")]
-    public string Model { get; set; } = "MiniMax-M2.1";
+    public string Model { get; set; } = "MiniMax-M2.7-highspeed";
 
     [JsonPropertyName("max_tokens")]
     public int MaxTokens { get; set; } = 1000;
