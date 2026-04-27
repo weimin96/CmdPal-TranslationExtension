@@ -43,7 +43,7 @@ public static class SettingsManager
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to load settings: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"加载设置失败：{ex.Message}");
         }
         return new TranslationSettings();
     }
@@ -52,22 +52,15 @@ public static class SettingsManager
     {
         lock (_lock)
         {
-            try
+            var directory = Path.GetDirectoryName(SettingsPath);
+            if (directory != null && !Directory.Exists(directory))
             {
-                var directory = Path.GetDirectoryName(SettingsPath);
-                if (directory != null && !Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
+                Directory.CreateDirectory(directory);
+            }
 
-                var json = JsonSerializer.Serialize(settings, _jsonContext.TranslationSettings);
-                File.WriteAllText(SettingsPath, json);
-                _instance = settings;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to save settings: {ex.Message}");
-            }
+            var json = JsonSerializer.Serialize(settings, _jsonContext.TranslationSettings);
+            File.WriteAllText(SettingsPath, json);
+            _instance = settings;
         }
     }
 }
